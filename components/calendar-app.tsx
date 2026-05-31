@@ -1,75 +1,71 @@
-"use client"
+"use client";
 
-import { useMemo, useState } from "react"
-import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { useMemo, useState } from "react";
+import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { ReligionFilter } from "@/components/religion-filter"
-import { CalendarGrid } from "@/components/calendar-grid"
-import { DayDetail } from "@/components/day-detail"
-import { UpcomingHolidays } from "@/components/upcoming-holidays"
-import {
-  HOLIDAYS,
-  holidaysByDate,
-  holidaysInMonth,
-} from "@/lib/holidays"
-import { RELIGIONS, type ReligionId } from "@/lib/religions"
-import { MONTHS_PT, toIsoDate } from "@/lib/calendar-utils"
+} from "@/components/ui/select";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { ReligionFilter } from "@/components/religion-filter";
+import { CalendarGrid } from "@/components/calendar-grid";
+import { DayDetail } from "@/components/day-detail";
+import { UpcomingHolidays } from "@/components/upcoming-holidays";
+import { HOLIDAYS, holidaysByDate, holidaysInMonth } from "@/lib/holidays";
+import { RELIGIONS, type ReligionId } from "@/lib/religions";
+import { MONTHS_PT, toIsoDate } from "@/lib/calendar-utils";
 
-const INITIAL_DATE = new Date(2026, 0, 6) // Epiphany — something meaningful on mount
+const INITIAL_DATE = new Date(); // Epiphany — something meaningful on mount
 
-const ALL_IDS = new Set<ReligionId>(RELIGIONS.map((r) => r.id))
+const ALL_IDS = new Set<ReligionId>(RELIGIONS.map((r) => r.id));
 
-type CalendarView = "gregorian" | ReligionId
+type CalendarView = "gregorian" | ReligionId;
 
 export function CalendarApp() {
-  const [viewDate, setViewDate] = useState<Date>(INITIAL_DATE)
-  const [selectedDate, setSelectedDate] = useState<Date>(INITIAL_DATE)
-  const [active, setActive] = useState<Set<ReligionId>>(new Set(ALL_IDS))
-  const [calendarView, setCalendarView] = useState<CalendarView>("gregorian")
+  const [viewDate, setViewDate] = useState<Date>(INITIAL_DATE);
+  const [selectedDate, setSelectedDate] = useState<Date>(INITIAL_DATE);
+  const [active, setActive] = useState<Set<ReligionId>>(new Set(ALL_IDS));
+  const [calendarView, setCalendarView] = useState<CalendarView>("gregorian");
 
-  const year = viewDate.getFullYear()
-  const month = viewDate.getMonth()
+  const year = viewDate.getFullYear();
+  const month = viewDate.getMonth();
 
   const monthHolidays = useMemo(
     () => holidaysInMonth(year, month),
     [year, month],
-  )
+  );
 
   const visibleMonthHolidays = useMemo(
     () => monthHolidays.filter((h) => active.has(h.religion)),
     [monthHolidays, active],
-  )
+  );
 
   const selectedHolidays = useMemo(() => {
     return holidaysByDate(toIsoDate(selectedDate)).filter((h) =>
       active.has(h.religion),
-    )
-  }, [selectedDate, active])
+    );
+  }, [selectedDate, active]);
 
   const toggleReligion = (id: ReligionId) => {
     setActive((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      return next
-    })
-  }
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
 
-  const prevMonth = () => setViewDate(new Date(year, month - 1, 1))
-  const nextMonth = () => setViewDate(new Date(year, month + 1, 1))
+  const prevMonth = () => setViewDate(new Date(year, month - 1, 1));
+  const nextMonth = () => setViewDate(new Date(year, month + 1, 1));
   const goToday = () => {
-    const today = new Date()
-    setViewDate(new Date(today.getFullYear(), today.getMonth(), 1))
-    setSelectedDate(today)
-  }
+    const today = new Date();
+    setViewDate(new Date(today.getFullYear(), today.getMonth(), 1));
+    setSelectedDate(today);
+  };
 
   return (
     <div className="min-h-svh bg-background text-foreground">
@@ -221,8 +217,8 @@ export function CalendarApp() {
               referenceDate={selectedDate}
               activeReligions={active}
               onSelectDate={(d) => {
-                setSelectedDate(d)
-                setViewDate(new Date(d.getFullYear(), d.getMonth(), 1))
+                setSelectedDate(d);
+                setViewDate(new Date(d.getFullYear(), d.getMonth(), 1));
               }}
             />
           </aside>
@@ -236,7 +232,5 @@ export function CalendarApp() {
         </footer>
       </main>
     </div>
-  )
+  );
 }
-
-
